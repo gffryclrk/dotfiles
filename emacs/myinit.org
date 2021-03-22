@@ -1,22 +1,28 @@
 #+STARTIP: overview
+* Package Repositories
+#+BEGIN_SRC emacs-lisp
+  (require 'package)
+  (setq package-enable-at-startup nil)
+  (add-to-list 'package-archives
+               '("melpa" . "https://melpa.org/packages/"))
+
+  (package-initialize)
+
+  (unless (package-installed-p 'use-package)
+    (package-refresh-contents)
+    (package-install 'use-package))
+#+END_SRC
+
 * Interface tweaks
 #+BEGIN_SRC emacs-lisp 
+  (setq inhibit-splash-screen t)
+  (tool-bar-mode -1)
+
   (fset 'yes-or-no-p 'y-or-n-p)
 
-  ;; Line numbers? Yes plz
+    ;; Line numbers? Yes plz
   (when (version<= "26.0.50" emacs-version )
     (global-display-line-numbers-mode))
-
-  ;; Font size of all buffers
-;;  (set-frame-font "Menlo 18" nil t)
-;;
-;;  ;; Set the minibuffer size to be smaller
-;;  (add-hook 'minibuffer-setup-hook 'my-minibuffer-setup)
-;;  (defun my-minibuffer-setup ()
-;;         (set (make-local-variable 'face-remapping-alist)
-;;              '((default :height 0.7))))
-
-
 #+END_SRC
 
 * Try
@@ -75,9 +81,6 @@
 
 ;; (load-theme 'tsdh-dark t)
 #+END_SRC
-
-#+RESULTS:
-: t
 
 * Projectile
 #+BEGIN_SRC emacs-lisp
@@ -237,7 +240,19 @@ http://ergoemacs.org/emacs/elisp_datetime.html
       )
     )
 #+END_SRC
-* Babel & Literate Programming
+* Org mode things
+** Capture templates
+Following along with Prot for this:
+[[https://www.youtube.com/watch?v=qCdScs4YO8k][Emacs: Introduction to ORG-CAPTURE (YouTube)]]
+#+BEGIN_SRC emacs-lisp
+  (setq org-capture-templates
+        '(("m" "Meeting" entry
+           (file+headline "meetings.org" "Meeting Headline")
+           "* Meeting Title: %?")
+          ))
+#+END_SRC
+
+** Babel & Literate Programming
 Babel
 #+BEGIN_SRC emacs-lisp
   (use-package scala-mode

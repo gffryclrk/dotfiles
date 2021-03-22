@@ -1,30 +1,14 @@
 ;; -*- mode: elisp -*-
  
 ;; Disable the splash screen (to enable it agin, replace the t with 0)
-
 ;; Added by Package.el.  This must come before configurations of
 ;; installed packages.  Don't delete this line.  If you don't want it,
 ;; just comment it out by adding a semicolon to the start of the line.
 ;; You may delete these explanatory comments.
 
-(require 'package)
-(setq package-enable-at-startup nil)
-(add-to-list 'package-archives
-	     '("melpa" . "https://melpa.org/packages/"))
-
-(package-initialize)
-
-(unless (package-installed-p 'use-package)
-  (package-refresh-contents)
-  (package-install 'use-package))
-
 ;; Stuff from Zamansky
 (org-babel-load-file (expand-file-name "~/.dotfiles/emacs/myinit.org"))
 ;; End of Zamansky
-
-
-(setq inhibit-splash-screen t)
-(tool-bar-mode -1)
 
 ;; Enable transient mark mode
 (transient-mark-mode 1)
@@ -52,17 +36,6 @@
    (quote
     (pinentry scala-mode ace-window counsel-projectile projectile elpy elfeed-goodies elfeed-org elfeed iedit expand-region evil yasnippet-snippets yasnippet exec-path-from-shell jedi flycheck htmlize ox-reveal zenburn-theme auto-complete counsel swiper which-key try use-package))))
  
-;; Vim Emulation
-;; (add-to-list 'load-path "c:/Users/s6624656/tools/evil")
-;; (require 'evil)
-;; (evil-mode 1)
- 
-;; active Babel languages
-;;(org-babel-do-load-languages
-;;'org-babel-load-languages
-;;'((python . t)
-;;   (emacs-lisp . nil))
-
 
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
