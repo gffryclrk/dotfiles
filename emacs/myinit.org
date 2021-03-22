@@ -256,12 +256,9 @@ Following along with Prot for this:
     (setq org-capture-templates		
           `(("m" "Meeting" entry
              (file+headline 
-             ,(concat (file-name-directory (org-capture-get :original-file)) "meetings.org")
+             ,(concat (file-name-directory (or (org-capture-get :original-file t) (org-capture-get :original-file))) "meetings.org")
               "Meeting Headline") "* Meeting Title: %?")))
 #+END_SRC
-
-#+RESULTS:
-| m | Meeting | entry | (file+headline (, (concat (file-name-directory (org-capture-get :original-file)) meetings.org)) Meeting Headline) | * Meeting Title: %? |
 
 ** Babel & Literate Programming
 Babel
