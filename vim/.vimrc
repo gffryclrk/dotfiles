@@ -1,3 +1,5 @@
+colors zenburn
+
 set nu
 set expandtab
 set tabstop=4
@@ -10,12 +12,10 @@ autocmd FileType yaml setlocal ts=2 sts=2 sw=2 expandtab
 set backspace=indent " I don't like not being able to backspace
 
 call plug#begin('~/.vim/plugged')
-
-" Make sure you use single quotes
-Plug 'christoomey/vim-tmux-navigator'
-
-
-" Initialize plugin system
+        " Make sure you use single quotes
+        Plug 'christoomey/vim-tmux-navigator'
+        Plug 'preservim/nerdtree'
+        Plug 'tpope/vim-abolish'
+        " Initialize plugin system
 call plug#end()
 
-colors zenburn
