@@ -6,6 +6,11 @@ set tabstop=4
 syntax on
 autocmd FileType yaml setlocal ts=2 sts=2 sw=2 expandtab
 
+nnoremap <C-J> <C-W><C-J>
+nnoremap <C-K> <C-W><C-K>
+nnoremap <C-H> <C-W><C-L>
+nnoremap <C-H> <C-W><C-H>
+
 :nnoremap <Tab> :bnext<CR>
 :nnoremap <S-Tab> :bprevious<CR>
 
