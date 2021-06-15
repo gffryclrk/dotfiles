@@ -76,12 +76,6 @@
 (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map)
 )
 
-(use-package ox-reveal
-  :ensure ox-reveal)
-;; (setq org-reveal-root "https://cdn.jsdelivr.net/reveal.js/3.0.0/")
-(setq org-reveal-root "https://cdn.jsdelivr.net/npm/reveal.js")
-(setq org-reveal-mathjax t)
-
 (use-package flycheck
   :ensure t
   :init
@@ -92,14 +86,14 @@
 (setq python-shell-completion-native-enable nil)
 
 (use-package jedi
-  :ensure t
-  :init
-  (add-hook 'python-mode-hook 'jedi:setup)
-  (add-hook 'python-mode-hook 'jedi:ac-setup)
-  )
+    :ensure t
+    :init
+    (add-hook 'python-mode-hook 'jedi:setup)
+    (add-hook 'python-mode-hook 'jedi:ac-setup)
+    )
 
 (when (memq window-system '(mac ns))
-  (exec-path-from-shell-initialize))
+  (exec-path-from-shell-initialize ))
 
 (use-package elpy
   :ensure t

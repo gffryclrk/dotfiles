@@ -98,18 +98,6 @@
   )
 #+END_SRC
 
-* Reveal
-#+BEGIN_SRC emacs-lisp
-  (use-package ox-reveal
-    :ensure ox-reveal)
-  ;; (setq org-reveal-root "https://cdn.jsdelivr.net/reveal.js/3.0.0/")
-  (setq org-reveal-root "https://cdn.jsdelivr.net/npm/reveal.js")
-  (setq org-reveal-mathjax t)
-#+END_SRC
-
-#+RESULTS:
-: t
-
 * Python
 ** Flycheck
 #+BEGIN_SRC emacs-lisp
@@ -127,15 +115,14 @@
 ** Jedi 
 #+BEGIN_SRC emacs-lisp
   (use-package jedi
-    :ensure t
-    :init
-    (add-hook 'python-mode-hook 'jedi:setup)
-    (add-hook 'python-mode-hook 'jedi:ac-setup)
-    )
+      :ensure t
+      :init
+      (add-hook 'python-mode-hook 'jedi:setup)
+      (add-hook 'python-mode-hook 'jedi:ac-setup)
+      )
 
   (when (memq window-system '(mac ns))
-    (exec-path-from-shell-initialize))
-
+    (exec-path-from-shell-initialize ))
 #+END_SRC
 
 ** Elpy
@@ -147,8 +134,6 @@
 
 
 #+END_SRC
-
-#+RESULTS:
 
 ** Yasnippet
 #+BEGIN_SRC emacs-lisp
@@ -167,7 +152,6 @@
     (global-undo-tree-mode))
 #+END_SRC
 
-#+RESULTS:
 * Misc packages
 #+BEGIN_SRC emacs-lisp
   (use-package expand-region
@@ -179,7 +163,6 @@
     :ensure t)
 #+END_SRC
 
-#+RESULTS:
 * Elfeed
 #+BEGIN_SRC emacs-lisp
   (setq elfeed-db-directory "~/.elfeed/elfeeddb/")
@@ -427,18 +410,20 @@ copy/pasty from https://code.orgmode.org/bzg/org-mode/commit/90986a8e2fe881105cc
 #+END_SRC
 * Kill ring
 #+BEGIN_SRC emacs-lisp
-(setq save-interprogram-paste-before-kill t)
+  (setq save-interprogram-paste-before-kill t)
 #+END_SRC
 * Evil
 #+BEGIN_SRC emacs-lisp
+  (use-package evil)
   (require 'evil)
   (evil-mode 0)
 #+END_SRC
+
 * Easy GPG Ascii
 #+BEGIN_SRC emacs-lisp
   ;; From https://unix.stackexchange.com/a/276430
   ;; Also https://unix.stackexchange.com/questions/55638/can-emacs-use-gpg-agent-in-a-terminal-at-all/278875#278875
-  
+
   ;; Hopefully prompt for GPG key passphrase in minibuffer, not popup
   (setenv "INSIDE_EMACS" (format "%s,comint" emacs-version))
   (pinentry-start)
@@ -459,10 +444,11 @@ copy/pasty from https://code.orgmode.org/bzg/org-mode/commit/90986a8e2fe881105cc
     ;; The minor mode bindings.
     nil
     (if (symbol-value auto-encryption-armored-mode)
-        (set (make-local-variable 'epa-armor) t)
+	(set (make-local-variable 'epa-armor) t)
       (kill-local-variable 'epa-armor))
     )
 
   (add-to-list 'auto-mode-alist '("\\.asc$" . auto-encryption-armored-mode))
 
 #+END_SRC
+

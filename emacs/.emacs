@@ -8,6 +8,7 @@
 
 ;; Stuff from Zamansky
 (org-babel-load-file (expand-file-name "~/.dotfiles/emacs/myinit.org"))
+;;(org-babel-load-file (expand-file-name "myinit.org"))
 ;; End of Zamansky
 
 ;; Enable transient mark mode
