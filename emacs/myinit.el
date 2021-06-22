@@ -324,6 +324,7 @@ supported in Scala."
 
 (setq save-interprogram-paste-before-kill t)
 
+(use-package evil)
 (require 'evil)
 (evil-mode 0)
 
