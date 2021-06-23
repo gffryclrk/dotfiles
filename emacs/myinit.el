@@ -21,6 +21,8 @@
 (use-package try
   :ensure t)
 
+(add-to-list 'load-path "/Users/g.clark/.dotfiles/emacs/which-key.el")
+
 (use-package which-key
   :ensure t
   :config (which-key-mode))
@@ -175,7 +177,7 @@
 (setq org-capture-templates		
       '(("m" "Meeting")
         ("m1" "Meeting to org directory" entry
-         (file+headline "meetings.org" "Meetings")
+         (file+headline "~/Documents/org/meetings.org" "Meetings")
          "* %^{Meeting Title:}\nSCHEDULED: %^U\n** Agenda\n** Attendees\n** Minutes\n%?\n** Action Items\n")
         ("m2" "Meeting to this directory" entry
          (function 
@@ -327,32 +329,3 @@ supported in Scala."
 (use-package evil)
 (require 'evil)
 (evil-mode 0)
-
-;; From https://unix.stackexchange.com/a/276430
-;; Also https://unix.stackexchange.com/questions/55638/can-emacs-use-gpg-agent-in-a-terminal-at-all/278875#278875
-
-;; Hopefully prompt for GPG key passphrase in minibuffer, not popup
-(setenv "INSIDE_EMACS" (format "%s,comint" emacs-version))
-(pinentry-start)
-
-;; Decrypt GPG files in buffer
-(epa-file-enable)
-
-(setq epa-file-name-regexp "\\.\\(gpg\\|\\asc\\)\\(~\\|\\.~[0-9]+~\\)?\\'")
-(epa-file-name-regexp-update)
-
-;; Minor mode for ASCII-armored gpg-encrypted files
-(define-minor-mode auto-encryption-armored-mode
-  "Save files in encrypted, ASCII-armored format"
-  ;; The initial value.
-  nil
-  ;; The indicator for the mode line.
-  " Encrypted,Armored"
-  ;; The minor mode bindings.
-  nil
-  (if (symbol-value auto-encryption-armored-mode)
-      (set (make-local-variable 'epa-armor) t)
-    (kill-local-variable 'epa-armor))
-  )
-
-(add-to-list 'auto-mode-alist '("\\.asc$" . auto-encryption-armored-mode))
