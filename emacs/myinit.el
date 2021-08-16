@@ -9,6 +9,16 @@
   (package-refresh-contents)
   (package-install 'use-package))
 
+(use-package zenburn-theme
+  :ensure t
+  :config (load-theme 'zenburn t))
+
+;; (load-theme 'tsdh-dark t)
+
+(use-package org-cliplink
+  :ensure t
+)
+
 (setq inhibit-splash-screen t)
 (tool-bar-mode -1)
 
@@ -17,9 +27,6 @@
   ;; Line numbers? Yes plz
 (when (version<= "26.0.50" emacs-version )
   (global-display-line-numbers-mode))
-
-(use-package try
-  :ensure t)
 
 (setq ido-enable-flex-matching t)
 (setq ido-everywhere t)
@@ -52,12 +59,6 @@
     (ac-config-default)
     (global-auto-complete-mode t)
     ))
-
-(use-package zenburn-theme
-  :ensure t
-  :config (load-theme 'zenburn t))
-
-;; (load-theme 'tsdh-dark t)
 
 ;; projectile
 (use-package projectile
