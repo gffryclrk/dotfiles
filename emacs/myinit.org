@@ -45,6 +45,11 @@ Visual line mode to for line wrap
 #+begin_src emacs-lisp
 (global-visual-line-mode t)
 #+end_src
+
+Line & Column in status bar
+#+begin_src emacs-lisp
+(setq column-number-mode t)
+#+end_src
 * Which key
 Issues with which-key with Emacs 27.2 running on macOS Catalina
 #+BEGIN_SRC emacs-lisp
@@ -533,12 +538,13 @@ JIRA links
 #+BEGIN_SRC emacs-lisp
   (setq save-interprogram-paste-before-kill t)
 #+END_SRC
-* Evil
+Evil
 Evil mode
 #+BEGIN_SRC emacs-lisp
   (use-package evil
     :ensure t
     :init
+    (setq evil-want-C-i-jump nil)
     (setq evil-want-C-u-scroll t)
     (evil-mode 1)
     )
@@ -552,7 +558,7 @@ Evil Surround
   (global-evil-surround-mode 1))
 #+end_src
 
-* Easy GPG Ascii
+Easy GPG Ascii
 #+BEGIN_SRC emacs-lisp
   ;; From https://unix.stackexchange.com/a/276430
   ;; Also https://unix.stackexchange.com/questions/55638/can-emacs-use-gpg-agent-in-a-terminal-at-all/278875#278875
