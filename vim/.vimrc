@@ -31,6 +31,7 @@ call plug#begin('~/.vim/plugged')
         Plug 'tpope/vim-surround'
         Plug 'hashivim/vim-terraform'
         Plug 'Yggdroot/indentLine'
+        Plug 'mattn/emmet-vim'
         " Initialize plugin system
 call plug#end()
 
@@ -38,3 +39,6 @@ call plug#end()
 let g:indent_guides_enable_on_vim_startup = 1
 let g:indent_guides_tab_guides = 1
 let g:indentLine_char_list = ['|', '¦', '┆', '┊']
+
+nnoremap <F5> "=strftime("%A, %B %d %Y\n%H%M")<CR>P
+nnoremap <F6> o<ESC>75i=<ESC>o<ESC>
