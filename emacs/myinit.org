@@ -328,6 +328,64 @@ Convert unix ms to readable timestamp. [[https://emacs.stackexchange.com/a/40986
     )
 #+end_src
 
+Copy Buffer Filename to Clipboard
+#+begin_src emacs-lisp
+  (defun my/copy-buffer-filename ()
+    "Copy the current buffer's file name (not path) to the kill ring."
+    (interactive)
+    (when-let ((filename (buffer-file-name)))
+      (kill-new (file-name-nondirectory filename))
+      (message "Copied: %s" (file-name-nondirectory filename))))
+#+end_src
+
+#+begin_src emacs-lisp
+  (defun my/copy-buffer-full-path ()
+    "Copy the current buffer's file name (not path) to the kill ring."
+    (interactive)
+    (when-let ((filename (buffer-file-name)))
+      (kill-new filename)
+      (message "Copied: %s" filename)))
+#+end_src
+
+#+begin_src emacs-lisp
+  (defun my/copy-python-module-path ()
+    "Copy the Python module path (e.g. module.submodule.file) to the kill ring.
+With pyproject.toml: walks down from project root to find the first package
+directory on the path to the file — its parent is the source root. This handles
+both flat layout and src/ layout, and tolerates non-package dirs like lib/.
+Without pyproject.toml: falls back to walking up via __init__.py."
+    (interactive)
+    (when-let ((filename (buffer-file-name)))
+      (unless (string-suffix-p ".py" filename)
+        (user-error "Not a Python file"))
+      (let* ((project-root (locate-dominating-file filename "pyproject.toml"))
+             (source-root
+              (if (null project-root)
+                  (let ((root (file-name-directory filename)))
+                    (while (file-exists-p (expand-file-name "__init__.py" root))
+                      (setq root (file-name-directory (directory-file-name root))))
+                    root)
+                (let* ((rel (file-relative-name filename project-root))
+                       (components (split-string rel "/"))
+                       (candidate-root project-root)
+                       (current project-root))
+                  (catch 'found
+                    (dolist (component components)
+                      (let ((next (expand-file-name component current)))
+                        (when (file-directory-p next)
+                          (if (file-exists-p (expand-file-name "__init__.py" next))
+                              (throw 'found candidate-root)
+                            (setq candidate-root (file-name-as-directory next))))
+                        (setq current next)))
+                    project-root)))))
+        (let* ((relative (file-relative-name (file-name-sans-extension filename) source-root))
+               (module (replace-regexp-in-string "/" "." relative)))
+          (when (string-suffix-p ".__init__" module)
+            (setq module (substring module 0 (- (length module) 9))))
+          (kill-new module)
+          (message "Copied: %s" module)))))
+#+end_src
+
 * Org mode things
 ** General
 Org directory & org log into drawer (:LOGBOOK: drawer)
@@ -487,6 +545,21 @@ PR Links
     )
 
   (global-set-key (kbd "C-x p p") 'insert-pr-url)
+
+  (defun my/insert-pr-url-with-title ()
+    "Fetch PR title via gh CLI and insert as Org Mode link."
+    (interactive)
+    (let* ((url (string-trim (string-trim-right (current-kill 0) "/+")))
+           (parts (split-string url "/"))
+           (pr-number (car (last parts)))
+           (repo (format "%s/%s" (nth 3 parts) (nth 4 parts)))
+           (title (string-trim
+                   (shell-command-to-string
+                    (format "gh pr view %s --repo %s --json title -q .title"
+                            pr-number repo))))
+           (pr-link (format "[[%s][%s]]" url title)))
+      (insert pr-link)))
+  (global-set-key (kbd "C-x p C-p") 'my/insert-pr-url-with-title)
 #+end_src
 
 Slack
