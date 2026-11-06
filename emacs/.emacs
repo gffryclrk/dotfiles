@@ -38,9 +38,10 @@
    '(counsel-projectile csv-mode elfeed-goodies elfeed-org elpy
 			evil-surround exec-path-from-shell
 			expand-region flycheck iedit jedi jinx
-			json-mode lsp-metals lsp-ui org-cliplink
-			pinentry poetry sbt-mode undo-tree yaml-mode
-			zenburn-theme)))
+			json-mode lsp-metals lsp-ui magit markdown-toc
+			org-cliplink pinentry poetry sbt-mode
+			treemacs-evil treemacs-projectile undo-tree
+			uuidgen valign yaml-mode zenburn-theme)))
  
 
 (custom-set-faces
@@ -50,3 +51,4 @@
  ;; If there is more than one, they won't work right.
  )
 (put 'dired-find-alternate-file 'disabled nil)
+(put 'narrow-to-region 'disabled nil)
