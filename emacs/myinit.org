@@ -328,6 +328,64 @@ Convert unix ms to readable timestamp. [[https://emacs.stackexchange.com/a/40986
     )
 #+end_src
 
+Copy Buffer Filename to Clipboard
+#+begin_src emacs-lisp
+  (defun my/copy-buffer-filename ()
+    "Copy the current buffer's file name (not path) to the kill ring."
+    (interactive)
+    (when-let ((filename (buffer-file-name)))
+      (kill-new (file-name-nondirectory filename))
+      (message "Copied: %s" (file-name-nondirectory filename))))
+#+end_src
+
+#+begin_src emacs-lisp
+  (defun my/copy-buffer-full-path ()
+    "Copy the current buffer's file name (not path) to the kill ring."
+    (interactive)
+    (when-let ((filename (buffer-file-name)))
+      (kill-new filename)
+      (message "Copied: %s" filename)))
+#+end_src
+
+#+begin_src emacs-lisp
+  (defun my/copy-python-module-path ()
+    "Copy the Python module path (e.g. module.submodule.file) to the kill ring.
+With pyproject.toml: walks down from project root to find the first package
+directory on the path to the file — its parent is the source root. This handles
+both flat layout and src/ layout, and tolerates non-package dirs like lib/.
+Without pyproject.toml: falls back to walking up via __init__.py."
+    (interactive)
+    (when-let ((filename (buffer-file-name)))
+      (unless (string-suffix-p ".py" filename)
+        (user-error "Not a Python file"))
+      (let* ((project-root (locate-dominating-file filename "pyproject.toml"))
+             (source-root
+              (if (null project-root)
+                  (let ((root (file-name-directory filename)))
+                    (while (file-exists-p (expand-file-name "__init__.py" root))
+                      (setq root (file-name-directory (directory-file-name root))))
+                    root)
+                (let* ((rel (file-relative-name filename project-root))
+                       (components (split-string rel "/"))
+                       (candidate-root project-root)
+                       (current project-root))
+                  (catch 'found
+                    (dolist (component components)
+                      (let ((next (expand-file-name component current)))
+                        (when (file-directory-p next)
+                          (if (file-exists-p (expand-file-name "__init__.py" next))
+                              (throw 'found candidate-root)
+                            (setq candidate-root (file-name-as-directory next))))
+                        (setq current next)))
+                    project-root)))))
+        (let* ((relative (file-relative-name (file-name-sans-extension filename) source-root))
+               (module (replace-regexp-in-string "/" "." relative)))
+          (when (string-suffix-p ".__init__" module)
+            (setq module (substring module 0 (- (length module) 9))))
+          (kill-new module)
+          (message "Copied: %s" module)))))
+#+end_src
+
 * Org mode things
 ** General
 Org directory & org log into drawer (:LOGBOOK: drawer)
@@ -472,7 +530,8 @@ JIRA links
 
   (global-set-key (kbd "C-x p j") 'insert-jira-url)
 #+end_src
-PR Links
+
+Github & Other Helpers
 #+begin_src emacs-lisp
   (defun insert-pr-url ()
     "Cut JIRA ticket URL from clipboard & Transform into Org Mode Link"
@@ -487,6 +546,47 @@ PR Links
     )
 
   (global-set-key (kbd "C-x p p") 'insert-pr-url)
+
+  (defun my/insert-pr-url-with-title ()
+    "Fetch PR title via gh CLI and insert as Org Mode link."
+    (interactive)
+    (let* ((url (string-trim (string-trim-right (current-kill 0) "/+")))
+           (parts (split-string url "/"))
+           (pr-number (car (last parts)))
+           (repo (format "%s/%s" (nth 3 parts) (nth 4 parts)))
+           (title (string-trim
+                   (shell-command-to-string
+                    (format "gh pr view %s --repo %s --json title -q .title"
+                            pr-number repo))))
+           (pr-link (format "[[%s][%s - #%s]]" url title pr-number)))
+      (insert pr-link)))
+  (global-set-key (kbd "C-x p C-p") 'my/insert-pr-url-with-title)
+
+  (defun my/github-org-and-repo-from-remote ()
+    "Return (org . repo) parsed from git remote origin URL."
+    (let* ((remote (string-trim
+                    (shell-command-to-string "git remote get-url origin")))
+           (path (replace-regexp-in-string
+                  "\\`git@github\\.com:\\|\\`https://github\\.com/\\|\\.git\\'" "" remote)))
+      (let ((parts (split-string path "/")))
+        (cons (nth 0 parts) (nth 1 parts)))))
+
+  (defun my/copy-github-permalink ()
+    "Copy a GitHub permalink for the current file and line to the clipboard."
+    (interactive)
+    (let* ((file (buffer-file-name))
+           (default-directory (file-name-directory file))
+           (repo-root (string-trim
+                       (shell-command-to-string "git rev-parse --show-toplevel")))
+           (hash (string-trim
+                  (shell-command-to-string "git rev-parse HEAD")))
+           (org-repo (my/github-org-and-repo-from-remote))
+           (relative-path (file-relative-name file repo-root))
+           (line (line-number-at-pos))
+           (url (format "https://github.com/%s/%s/blob/%s/%s?plain=1#L%d"
+                        (car org-repo) (cdr org-repo) hash relative-path line)))
+      (kill-new url)
+      (message "Copied: %s" url)))
 #+end_src
 
 Slack
@@ -845,6 +945,36 @@ source: [[https://www.emacswiki.org/emacs/PasswordGenerator][EmacsWiki: Password
   (use-package markdown-toc
     :ensure t
     :after markdown-mode)
+
+  (set-face-attribute 'markdown-table-face nil
+                      :slant 'normal
+                      :family "Monospace")
+
+  (dolist (spec '((markdown-header-face-1 . 1.8)
+                  (markdown-header-face-2 . 1.5)
+                  (markdown-header-face-3 . 1.3)
+                  (markdown-header-face-4 . 1.1)
+                  (markdown-header-face-5 . 1.0)
+                  (markdown-header-face-6 . 1.0)))
+    (set-face-attribute (car spec) nil
+                        :height (cdr spec)
+                        :weight 'bold))
+
+  (set-face-attribute 'markdown-inline-code-face nil
+                      :foreground "#8CD0D3"
+                      :background "#4A4A4A"
+                      :family "Monospace")
+
+  (defun my/markdown-align-all-tables ()
+    "Align all tables in a markdown buffer without marking it as modified."
+    (with-silent-modifications
+      (save-excursion
+        (let ((inhibit-read-only t))
+          (goto-char (point-min))
+          (while (re-search-forward "^|" nil t)
+            (markdown-table-align))))))
+
+  (add-hook 'markdown-mode-hook #'my/markdown-align-all-tables)
 #+end_src
 
 * Magit
@@ -876,4 +1006,3 @@ This code is from [[https://stackoverflow.com/a/32914548][StackOverflow]] for op
      (magit-get-current-branch))))
 
 #+end_src
-
