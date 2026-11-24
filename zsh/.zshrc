@@ -32,6 +32,7 @@ alias h1="history 1"
 alias hrg='history 1 | rg'
 
 mkcd() { mkdir -p -- "$1" && cd -P -- "$1"; }
+rlcp() { greadlink -f "$1" | pbcopy }
 
 # So that M-d jumps back by /levels/in/dir/paths
 autoload -U select-word-style
