@@ -417,7 +417,8 @@ Following along with Prot for this:
  'org-babel-load-languages
  '((R . t)
    (python . t)
-   (awk . t)))
+   (awk . t)
+   (plantuml . t)))
 #+END_SRC
 
 ** Custom Functions (Org Specific)
@@ -876,4 +877,30 @@ This code is from [[https://stackoverflow.com/a/32914548][StackOverflow]] for op
      (magit-get-current-branch))))
 
 #+end_src
+* PlantUML
+#+begin_src emacs-lisp
+  ;; Babel finds java through PATH, while Emacs looks in exec-path.
+  (let ((jenv-shims (expand-file-name "shims" (or (getenv "JENV_ROOT") "~/.jenv")))
+        (path (getenv "PATH")))
+    (when (file-executable-p (expand-file-name "java" jenv-shims))
+      (setq exec-path (cons jenv-shims (delete jenv-shims exec-path)))
+      (setenv "PATH"
+              (mapconcat #'identity
+                         (cons jenv-shims
+                               (delete jenv-shims (and path (split-string path path-separator))))
+                         path-separator))))
 
+  (setq org-plantuml-jar-path
+        (expand-file-name "~/Documents/resources/jars/plantuml-1.2026.10.jar")
+        org-plantuml-exec-mode 'jar)
+
+  (use-package plantuml-mode
+    :ensure t
+    :init
+    (setq plantuml-jar-path org-plantuml-jar-path
+          plantuml-default-exec-mode 'jar
+          plantuml-java-command "java"
+          plantuml-java-args '("-Djava.awt.headless=true" "-Xmx512m" "-jar")))
+
+  (add-to-list 'org-src-lang-modes '("plantuml" . plantuml))
+#+end_src
