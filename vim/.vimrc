@@ -21,8 +21,15 @@ nnoremap <C-H> <C-W><C-H>
 :nnoremap <Tab> :bnext<CR>
 :nnoremap <S-Tab> :bprevious<CR>
 :nnoremap <F2> gg"*yG''
+:vnoremap <F3> "*y
 
 set backspace=indent " I don't like not being able to backspace
+
+" Bracketed paste mode: prevents È/É garbage characters around pasted text
+let &t_BE = "\e[?2004h"
+let &t_BD = "\e[?2004l"
+let &t_PS = "\e[200~"
+let &t_PE = "\e[201~"
 
 call plug#begin('~/.vim/plugged')
         " Make sure you use single quotes
