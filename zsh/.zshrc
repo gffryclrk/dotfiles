@@ -27,11 +27,40 @@ alias ll="gls -lh" # Use coreutils ls to respect `TIME_STYLE`
 alias g=git
 alias gst="git status"
 alias tf=terraform
-alias gitk="sed -i .bak 's/zoomed/normal/g' ~/.config/git/gitk && /usr/local/bin/gitk"
+# alias gitk="sed -i .bak 's/zoomed/normal/g' ~/.config/git/gitk && /usr/local/bin/gitk"
 alias h1="history 1"
 alias hrg='history 1 | rg'
 
 mkcd() { mkdir -p -- "$1" && cd -P -- "$1"; }
+rlcp() { greadlink -f "$1" | pbcopy }
+
+s3head() {
+    local uri=${1:-} lines=${2:-10} bucket prefix listing key
+
+    if [[ $uri != s3://?*/* || $lines != <1-> ]]; then
+        print -u2 -- 'Usage: s3head s3://bucket/prefix/ [lines]'
+        return 2
+    fi
+
+    uri=${uri#s3://}
+    bucket=${uri%%/*}
+    prefix=${uri#*/}
+    prefix=${prefix%/}
+
+    listing=$(aws s3api list-objects-v2 --bucket "$bucket" \
+        --prefix "${prefix:+$prefix/}part-" --delimiter / \
+        --output json --no-cli-pager) || return
+
+    key=$(jq -r '[.Contents[]? | select(.Key | endswith(".csv"))]
+        | max_by(.LastModified) | .Key // empty' <<< "$listing") || return
+
+    if [[ -z $key ]]; then
+        print -u2 -- "No part-*.csv found under s3://$uri"
+        return 1
+    fi
+
+    aws s3 cp "s3://$bucket/$key" - --only-show-errors | head -n "$lines"
+}
 
 # So that M-d jumps back by /levels/in/dir/paths
 autoload -U select-word-style
