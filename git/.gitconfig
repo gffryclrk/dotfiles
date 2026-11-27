@@ -1,6 +1,5 @@
 [user]
     name = Geoffrey Clark
-    email = mr@gffryclrk.com
 [core]
     editor = vim
 [alias]
@@ -29,4 +28,5 @@
     tool = vimdiff
     conflictstyle = diff3
     prompt = false
-
+[include]
+    path = ~/.gitconfig.local
